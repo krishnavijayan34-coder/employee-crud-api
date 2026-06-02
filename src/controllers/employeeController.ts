@@ -1,10 +1,19 @@
 import Employee from "../models/employee";
 
-export async function getAllEmployees() {
+interface EmployeeData {
+    name: string;
+    email: string;
+    designation: string;
+    age: number;
+}
+
+export async function getAllEmployees(): Promise<any> {
     return await Employee.findAll();
 }
 
-export async function getOneEmployee(id: number) {
+export async function getOneEmployee(
+    id: number
+): Promise<any> {
     return await Employee.findByPk(id);
 }
 
@@ -13,7 +22,8 @@ export async function insertEmployee(
     email: string,
     designation: string,
     age: number
-) {
+): Promise<any> {
+
     return await Employee.create({
         name,
         email,
@@ -28,7 +38,8 @@ export async function updateEmployee(
     email: string,
     designation: string,
     age: number
-) {
+): Promise<[number]> {
+
     return await Employee.update(
         {
             name,
@@ -42,7 +53,10 @@ export async function updateEmployee(
     );
 }
 
-export async function deleteEmployee(id: number) {
+export async function deleteEmployee(
+    id: number
+): Promise<number> {
+
     return await Employee.destroy({
         where: { id }
     });

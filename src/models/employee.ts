@@ -1,8 +1,37 @@
-import { DataTypes } from "sequelize";
+import {
+    DataTypes,
+    Model,
+    Optional
+} from "sequelize";
+
 import sequelize from "../config/db";
 
-const Employee = sequelize.define(
-    "employee",
+export interface EmployeeAttributes {
+    id: number;
+    name: string;
+    email: string;
+    designation: string;
+    age: number;
+}
+
+export interface EmployeeCreationAttributes
+    extends Optional<EmployeeAttributes, "id"> {}
+
+class Employee
+    extends Model<
+        EmployeeAttributes,
+        EmployeeCreationAttributes
+    >
+    implements EmployeeAttributes
+{
+    public id!: number;
+    public name!: string;
+    public email!: string;
+    public designation!: string;
+    public age!: number;
+}
+
+Employee.init(
     {
         id: {
             type: DataTypes.INTEGER,
@@ -21,15 +50,19 @@ const Employee = sequelize.define(
         },
 
         designation: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING,
+            allowNull: true
         },
 
         age: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            allowNull: true
         }
     },
-
     {
+        sequelize,
+        modelName: "employee",
+        tableName: "employee",
         timestamps: false
     }
 );

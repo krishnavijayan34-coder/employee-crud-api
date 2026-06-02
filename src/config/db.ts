@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
 import { config } from "./config";
 
-const sequelize = new Sequelize(
+const sequelize: Sequelize = new Sequelize(
     config.database.database || "",
     config.database.dbuser || "",
     config.database.dbpassword || "",

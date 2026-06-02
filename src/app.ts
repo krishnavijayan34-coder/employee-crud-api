@@ -1,9 +1,9 @@
-import express from "express";
+import express, { Application} from "express";
 import sequelize from "./config/db";
 import employeeRoutes from "./routes/employeeRoutes";
 
 import { config } from "./config/config";
-const app = express();
+const app : Application = express();
 
 app.use(express.json());
 
@@ -17,6 +17,10 @@ sequelize.sync()
             console.log(`Server running on port ${config.port}`);
         });
     })
-    .catch((err) => {
-        console.error("Database connection failed:", err);
+    .catch((err:unknown) => {
+       if (err instanceof Error) {
+            console.error("Database connection failed:", err.message);
+        } else {
+            console.error("Database connection failed with an unknown error:", err);
+        }
     });

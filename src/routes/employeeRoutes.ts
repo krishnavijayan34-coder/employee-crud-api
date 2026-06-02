@@ -1,4 +1,4 @@
-import express from "express";
+import express, {Request,Response,Router} from "express";
 
 import {
     getAllEmployees,
@@ -8,20 +8,23 @@ import {
     deleteEmployee
 } from "../controllers/employeeController";
 
-const router = express.Router();
+const router :Router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (req:Request, res:Response) : Promise<void> => {
     const employees = await getAllEmployees();
-    res.json(employees);
+    res.status(200).json(employees);
 });
 
-router.get("/:id", async (req, res) => {
-    const employee = await getOneEmployee(Number(req.params.id));
-    res.json(employee);
+router.get("/:id", async (req:Request, res:Response):Promise<void> => {
+    const id :number =Number(req.params.id);
+    const employee = await getOneEmployee(id);
+    res.status(200).json(employee);
 });
 
-router.post("/", async (req, res) => {
-    const { name, email, designation, age } = req.body;
+router.post("/", async (req:Request, res:Response):Promise<void> => {
+    const { name, email, designation, age } : {
+        name:string;email:string;designation:string;age:number;
+    } = req.body;
 
     await insertEmployee(
         name,
@@ -30,27 +33,25 @@ router.post("/", async (req, res) => {
         age
     );
 
-    res.send("Employee Created");
+    res.status(201).json({message:"Employee Created"});
 });
 
-router.put("/:id", async (req, res) => {
-    const { name, email, designation, age } = req.body;
+router.put("/:id", async (req:Request, res:Response):Promise<void> => {
+    const id:number=Number(req.params.id);
+    const { name, email, designation, age }: {
+        name:string;email:string;designation:string;age:number
+    } = req.body;
 
-    await updateEmployee(
-        Number(req.params.id),
-        name,
-        email,
-        designation,
-        age
-    );
-
-    res.send("Employee Updated");
+    await updateEmployee(id,name,email,designation,age);
+      
+    res.status(200).json({message:"Employee Updated"});
 });
 
-router.delete("/:id", async (req, res) => {
-    await deleteEmployee(Number(req.params.id));
+router.delete("/:id", async (req:Request, res:Response):Promise<void> => {
+    const id :number=Number(req.params.id);
+    await deleteEmployee(id);
 
-    res.send("Employee Deleted");
+    res.status(200).json({message:"Employee Deleted"});
 });
 
 export default router;
