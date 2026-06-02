@@ -7,29 +7,20 @@ interface EmployeeData {
     age: number;
 }
 
-export async function getAllEmployees(): Promise<any> {
+export async function getAllEmployees(): Promise<Employee[]> {
     return await Employee.findAll();
 }
 
 export async function getOneEmployee(
     id: number
-): Promise<any> {
+): Promise<Employee | null> {
     return await Employee.findByPk(id);
 }
 
 export async function insertEmployee(
-    name: string,
-    email: string,
-    designation: string,
-    age: number
-): Promise<any> {
-
-    return await Employee.create({
-        name,
-        email,
-        designation,
-        age
-    });
+    employee: EmployeeData
+): Promise<Employee> {
+    return await Employee.create(employee);
 }
 
 export async function updateEmployee(
@@ -39,7 +30,6 @@ export async function updateEmployee(
     designation: string,
     age: number
 ): Promise<[number]> {
-
     return await Employee.update(
         {
             name,
@@ -56,7 +46,6 @@ export async function updateEmployee(
 export async function deleteEmployee(
     id: number
 ): Promise<number> {
-
     return await Employee.destroy({
         where: { id }
     });

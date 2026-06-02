@@ -26,12 +26,10 @@ router.post("/", async (req:Request, res:Response):Promise<void> => {
         name:string;email:string;designation:string;age:number;
     } = req.body;
 
-    await insertEmployee(
-        name,
+    await insertEmployee({name,
         email,
         designation,
-        age
-    );
+        age});
 
     res.status(201).json({message:"Employee Created"});
 });
