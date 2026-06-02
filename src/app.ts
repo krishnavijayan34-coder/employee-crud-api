@@ -1,13 +1,14 @@
 import express, { Application} from "express";
 import sequelize from "./config/db";
 import employeeRoutes from "./routes/employeeRoutes";
-
+import departmentRoutes from "./routes/departmentRoutes"
 import { config } from "./config/config";
 const app : Application = express();
 
 app.use(express.json());
 
 app.use("/employees", employeeRoutes);
+app.use("/departments",departmentRoutes);
 
 sequelize.sync()
     .then(() => {
