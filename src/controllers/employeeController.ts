@@ -1,4 +1,5 @@
 import Employee from "../models/employee";
+import Address from "../models/address";
 
 interface EmployeeData {
     name: string;
@@ -8,13 +9,25 @@ interface EmployeeData {
 }
 
 export async function getAllEmployees(): Promise<Employee[]> {
-    return await Employee.findAll();
+    return await Employee.findAll({
+        include: [
+            {
+                model: Address,
+                as: "address"
+            }
+        ]
+    });
 }
 
-export async function getOneEmployee(
-    id: number
-): Promise<Employee | null> {
-    return await Employee.findByPk(id);
+export async function getOneEmployee(id: number) {
+    return await Employee.findByPk(id, {
+        include: [
+            {
+                model: Address,
+                as: "address"
+            }
+        ]
+    });
 }
 
 export async function insertEmployee(
