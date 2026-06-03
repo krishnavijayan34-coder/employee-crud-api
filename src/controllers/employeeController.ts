@@ -1,6 +1,6 @@
 import Employee from "../models/employee";
 import Department from "../models/department";
-
+import Skill from "../models/skill";
 interface EmployeeData {
     name: string;
     email: string;
@@ -15,6 +15,10 @@ export async function getAllEmployees(): Promise<Employee[]> {
             {
                 model: Department,
                 as: "department"
+            },
+            {
+                model:Skill,
+                as:"skills"
             }
         ]
     });
@@ -26,6 +30,10 @@ export async function getOneEmployee(id: number) {
             {
                 model: Department,
                 as: "department"
+            },
+            {
+                model:Skill,
+                as:"skills"
             }
         ]
     });

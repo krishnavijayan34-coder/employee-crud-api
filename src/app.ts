@@ -8,6 +8,10 @@ import "./models/department";
 import "./models/address";
 import "./models/associations";
 import addressRoutes from "./routes/addressRoutes";
+
+import "./models/skill";
+import "./models/employeeSkill"
+import skillRoute from "./routes/skillRoutes"
 const app : Application = express();
 
 app.use(express.json());
@@ -15,6 +19,7 @@ app.use(express.json());
 app.use("/employees", employeeRoutes);
 app.use("/departments",departmentRoutes);
 app.use("/address", addressRoutes);
+app.use("/skills",skillRoute);
 sequelize.sync()
     .then(() => {
         console.log("Database Connected");
