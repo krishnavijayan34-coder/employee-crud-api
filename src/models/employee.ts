@@ -12,6 +12,7 @@ export interface EmployeeAttributes {
     email: string;
     designation: string;
     age: number;
+    departmentId:number;
 }
 
 export interface EmployeeCreationAttributes
@@ -29,6 +30,7 @@ class Employee
     public email!: string;
     public designation!: string;
     public age!: number;
+    public departmentId!: number;
 }
 
 Employee.init(
@@ -57,6 +59,10 @@ Employee.init(
         age: {
             type: DataTypes.INTEGER,
             allowNull: true
+        },
+        departmentId: {
+            type:DataTypes.INTEGER,
+            allowNull:true
         }
     },
     {
