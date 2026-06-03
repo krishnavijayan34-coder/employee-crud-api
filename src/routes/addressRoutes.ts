@@ -1,20 +1,42 @@
-import express from "express";
-import Address from "../models/address";
+import express, {
+    Request,
+    Response,
+    Router
+} from "express";
 
-const router = express.Router();
+import {
+    getAllAddresses,
+    createAddress
+} from "../controllers/addressController";
 
-router.post("/", async (req, res) => {
-    try {
-        const address = await Address.create(req.body);
-        res.json(address);
-    } catch (err) {
-        res.status(500).json(err);
-    }
+const router: Router = express.Router();
+
+router.get("/", async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const data = await getAllAddresses();
+    res.status(200).json(data);
 });
 
-router.get("/", async (req, res) => {
-    const data = await Address.findAll();
-    res.json(data);
+router.post("/", async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+
+    const { city, employeeId }: {
+        city: string;
+        employeeId: number;
+    } = req.body;
+
+    await createAddress({
+        city,
+        employeeId
+    });
+
+    res.status(201).json({
+        message: "Address Created"
+    });
 });
 
 export default router;
