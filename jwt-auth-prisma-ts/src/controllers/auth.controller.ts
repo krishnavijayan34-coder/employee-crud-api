@@ -3,17 +3,14 @@ import prisma from "../config/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-/**
- * SIGNUP
- */
 export const signup = async (req: Request, res: Response) => {
   try {
     const { username, email, password, roles } = req.body;
 
-    // 1. Hash password
+   
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 2. Create user
+    
     const user = await prisma.user.create({
       data: {
         username,
@@ -22,7 +19,7 @@ export const signup = async (req: Request, res: Response) => {
       }
     });
 
-    // 3. Assign roles (if provided)
+    
     if (roles && roles.length > 0) {
       const dbRoles = await prisma.role.findMany({
         where: {
@@ -45,7 +42,7 @@ export const signup = async (req: Request, res: Response) => {
         }))
       });
     } else {
-      // 4. Default role (IMPORTANT)
+      
       const defaultRole = await prisma.role.findFirst({
         where: { name: "user" }
       });
@@ -70,14 +67,12 @@ export const signup = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * SIGNIN
- */
+
 export const signin = async (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
 
-    // 1. Find user
+  
     const user = await prisma.user.findUnique({
       where: { username }
     });
@@ -86,14 +81,13 @@ export const signin = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // 2. Check password
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid password" });
     }
 
-    // 3. Get user roles
+    
     const userRoles = await prisma.userRole.findMany({
       where: { userId: user.id },
       include: { role: true }
@@ -101,7 +95,6 @@ export const signin = async (req: Request, res: Response) => {
 
     const roles = userRoles.map((ur) => ur.role.name);
 
-    // 4. Generate token
     const token = jwt.sign(
       { userId: user.id, roles },
       process.env.JWT_SECRET as string,
