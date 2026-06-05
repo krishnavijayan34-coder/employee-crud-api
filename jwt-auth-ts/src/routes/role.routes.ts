@@ -3,7 +3,7 @@ import { Role } from "../models/association";
 
 const router = Router();
 
-// create role manually
+
 router.post("/create", async (req, res) => {
   try {
     const role = await Role.create({
