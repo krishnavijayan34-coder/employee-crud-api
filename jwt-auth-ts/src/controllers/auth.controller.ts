@@ -45,10 +45,15 @@ export const signin = async (req: Request, res: Response) => {
     authConfig.secret,
     { expiresIn: 86400 }
   );
+   const roles = await user.getRoles();
 
-  res.send({
+  const roleNames = roles.map((r: any) => r.name);
+
+  return res.send({
     id: user.id,
     username: user.username,
+    roles: roleNames,   
     accessToken: token
+  
   });
 };
