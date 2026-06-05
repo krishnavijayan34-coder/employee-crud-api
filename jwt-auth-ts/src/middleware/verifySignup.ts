@@ -1,31 +1,22 @@
 import { Request, Response, NextFunction } from "express";
 import { User, Role } from "../models/association";
 
-
 export const checkDuplicateUsernameOrEmail = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    // check username
-    const usernameExists = await User.findOne({
-      where: { username: req.body.username }
+    const userExists = await User.findOne({
+      where: {
+        username: req.body.username,
+        email: req.body.email
+      }
     });
 
-    if (usernameExists) {
+    if (userExists) {
       return res.status(400).send({
-        message: "Failed! Username is already in use!"
-      });
-    }
-
-    const emailExists = await User.findOne({
-      where: { email: req.body.email }
-    });
-
-    if (emailExists) {
-      return res.status(400).send({
-        message: "Failed! Email is already in use!"
+        message: "Failed! Username and Email already exist!"
       });
     }
 
@@ -36,7 +27,6 @@ export const checkDuplicateUsernameOrEmail = async (
     });
   }
 };
-
 
 export const checkRolesExisted = async (
   req: Request,
