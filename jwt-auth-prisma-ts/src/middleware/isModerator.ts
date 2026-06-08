@@ -14,16 +14,12 @@ export const isModerator = async (
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const roles = await prisma.userRole.findMany({
-      where: { userId },
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
       include: { role: true }
     });
 
-    const ok = roles.some(
-      (r) => r.role?.name === "moderator"
-    );
-
-    if (!ok) {
+    if (!user || user.role.name !== "moderator") {
       return res.status(403).json({ message: "Moderator required" });
     }
 

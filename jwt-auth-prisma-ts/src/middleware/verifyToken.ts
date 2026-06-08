@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 export interface AuthRequest extends Request {
   userId?: number;
-  roles?: string[];
+  roles?: string;
 }
 
 export const verifyToken = (
@@ -20,7 +20,7 @@ export const verifyToken = (
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
       userId: number;
-      roles: string[];
+      roles: string;
     };
 
     req.userId = decoded.userId;

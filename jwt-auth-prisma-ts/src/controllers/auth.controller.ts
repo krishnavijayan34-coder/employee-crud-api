@@ -5,57 +5,28 @@ import jwt from "jsonwebtoken";
 
 export const signup = async (req: Request, res: Response) => {
   try {
-    const { username, email, password, roles } = req.body;
+    const { username, email, password, roleId } = req.body;
 
-   
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    
+    const role = await prisma.role.findUnique({
+      where: { id: roleId }
+    });
+
+    if (!role) {
+      return res.status(400).json({
+        message: "Role not found"
+      });
+    }
+
     const user = await prisma.user.create({
       data: {
         username,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        roleId
       }
     });
-
-    
-    if (roles && roles.length > 0) {
-      const dbRoles = await prisma.role.findMany({
-        where: {
-          name: {
-            in: roles
-          }
-        }
-      });
-
-      if (dbRoles.length === 0) {
-        return res.status(400).json({
-          message: "No matching roles found in database"
-        });
-      }
-
-      await prisma.userRole.createMany({
-        data: dbRoles.map((role) => ({
-          userId: user.id,
-          roleId: role.id
-        }))
-      });
-    } else {
-      
-      const defaultRole = await prisma.role.findFirst({
-        where: { name: "user" }
-      });
-
-      if (defaultRole) {
-        await prisma.userRole.create({
-          data: {
-            userId: user.id,
-            roleId: defaultRole.id
-          }
-        });
-      }
-    }
 
     return res.status(201).json({
       message: "User registered successfully",
@@ -63,40 +34,43 @@ export const signup = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("SIGNUP ERROR:", error);
-    return res.status(500).json({ message: "Signup failed" });
+    return res.status(500).json({
+      message: "Signup failed"
+    });
   }
 };
-
 
 export const signin = async (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
 
-  
     const user = await prisma.user.findUnique({
-      where: { username }
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid password" });
-    }
-
-    
-    const userRoles = await prisma.userRole.findMany({
-      where: { userId: user.id },
+      where: { username },
       include: { role: true }
     });
 
-    const roles = userRoles.map((ur) => ur.role.name);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    const isMatch = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!isMatch) {
+      return res.status(401).json({
+        message: "Invalid password"
+      });
+    }
 
     const token = jwt.sign(
-      { userId: user.id, roles },
+      {
+        userId: user.id,
+        role: user.role.name
+      },
       process.env.JWT_SECRET as string,
       { expiresIn: "1d" }
     );
@@ -104,11 +78,13 @@ export const signin = async (req: Request, res: Response) => {
     return res.json({
       id: user.id,
       username: user.username,
-      roles,
+      role: user.role.name,
       accessToken: token
     });
   } catch (error) {
     console.error("SIGNIN ERROR:", error);
-    return res.status(500).json({ message: "Signin failed" });
+    return res.status(500).json({
+      message: "Signin failed"
+    });
   }
 };

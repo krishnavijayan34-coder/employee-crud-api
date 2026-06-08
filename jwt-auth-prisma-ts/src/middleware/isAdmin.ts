@@ -14,16 +14,12 @@ export const isAdmin = async (
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const roles = await prisma.userRole.findMany({
-      where: { userId },
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
       include: { role: true }
     });
 
-    const isAdmin = roles.some(
-      (r) => r.role?.name === "admin"
-    );
-
-    if (!isAdmin) {
+    if (!user || user.role.name !== "admin") {
       return res.status(403).json({ message: "Admin required" });
     }
 
